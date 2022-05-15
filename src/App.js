@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import './App.css';
 
 const App = () => {
-  const [parameters, setParameters] = useState({
-    characters: 15,
-    letters: false,
-    numbers: false,
-    symbols: false,
-  });
-  const lettersArray = [
+	const [generatedPassword, setGeneratedPassword] = useState('');
+	const [parameters, setParameters] = useState({
+		characters: 15,
+		letters: true,
+		numbers: true,
+		symbols: true,
+	});
+	const lettersArray = [
 		'a',
 		'b',
 		'c',
@@ -61,35 +62,69 @@ const App = () => {
 		'X',
 		'Y',
 		'Z',
-  ];
-  const numbersArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-  const symbolsArray = ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '+', '=', '{', '}', '[', ']', '|', ':', ';', '"', '\'', '<', '>', ',', '.', '?', '/', '\\', '~', '`'];
-  const generatePassword = () => {
-    if (!parameters.letters && !parameters.numbers && !parameters.symbols) {
-      alert('Please select at least one character type');
-      return
-    }
+	];
+	const numbersArray = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+	const symbolsArray = [
+		'!',
+		'@',
+		'#',
+		'$',
+		'%',
+		'^',
+		'&',
+		'*',
+		'(',
+		')',
+		'-',
+		'_',
+		'+',
+		'=',
+		'{',
+		'}',
+		'[',
+		']',
+		'|',
+		':',
+		';',
+		'"',
+		"'",
+		'<',
+		'>',
+		',',
+		'.',
+		'?',
+		'/',
+		'\\',
+		'~',
+		'`',
+	];
+	const generatePassword = e => {
+		e.preventDefault();
 
-    const selectionArray = []; 
-    if (parameters.letters) selectionArray.push(lettersArray);
-    if (parameters.numbers) selectionArray.push(numbersArray);
-    if (parameters.symbols) selectionArray.push(symbolsArray);
+		if (!parameters.letters && !parameters.numbers && !parameters.symbols) {
+			alert('Please select at least one character type');
+			return;
+		}
 
-    const iterationArray = new Array(parameters.characters)
-			.fill(0)
-      .map(() => {
-        const random = Math.floor(Math.random() * selectionArray.length);
-        const random2 = Math.floor(Math.random() * selectionArray[random].length);
-        return selectionArray[random][random2];
-      });
-  }
+		const selectionArray = [];
+		let tempPassword = [];
+		if (parameters.letters) selectionArray.push(lettersArray);
+		if (parameters.numbers) selectionArray.push(numbersArray);
+		if (parameters.symbols) selectionArray.push(symbolsArray);
 
+		for (let i = 0; i < selectionArray.length; i++) {
+			let random = Math.floor(Math.random() * selectionArray.length);
+			tempPassword.push(selectionArray[random]);
+		}
+
+		setGeneratedPassword(tempPassword.join());
+	};
 
 	return (
 		<div className='container'>
 			<div className='form-container'>
 				<form>
-					<h1></h1>
+					<h1>{generatedPassword}</h1>
 					<div>
 						<select
 							name='characters'
@@ -120,6 +155,7 @@ const App = () => {
 					</div>
 					<div>
 						<input
+							checked
 							type='checkbox'
 							name='letter'
 							id='letter'
@@ -132,6 +168,7 @@ const App = () => {
 					</div>
 					<div>
 						<input
+							checked
 							type='checkbox'
 							name='number'
 							id='number'
@@ -144,6 +181,7 @@ const App = () => {
 					</div>
 					<div>
 						<input
+							checked
 							type='checkbox'
 							name='symbol'
 							id='symbol'
