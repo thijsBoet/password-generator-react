@@ -1,103 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { AiOutlineCopy } from 'react-icons/ai';
 import './App.css';
 
 const App = () => {
 	const [generatedPassword, setGeneratedPassword] = useState('');
 	const [parameters, setParameters] = useState({
 		characters: 15,
-		letters: true,
-		numbers: true,
-		symbols: true,
+		letters: false,
+		numbers: false,
+		symbols: false,
 	});
-	const lettersArray = [
-		'a',
-		'b',
-		'c',
-		'd',
-		'e',
-		'f',
-		'g',
-		'h',
-		'i',
-		'j',
-		'k',
-		'l',
-		'm',
-		'n',
-		'o',
-		'p',
-		'q',
-		'r',
-		's',
-		't',
-		'u',
-		'v',
-		'w',
-		'x',
-		'y',
-		'z',
-		'A',
-		'B',
-		'C',
-		'D',
-		'E',
-		'F',
-		'G',
-		'H',
-		'I',
-		'J',
-		'K',
-		'L',
-		'M',
-		'N',
-		'O',
-		'P',
-		'Q',
-		'R',
-		'S',
-		'T',
-		'U',
-		'V',
-		'W',
-		'X',
-		'Y',
-		'Z',
-	];
-	const numbersArray = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-	const symbolsArray = [
-		'!',
-		'@',
-		'#',
-		'$',
-		'%',
-		'^',
-		'&',
-		'*',
-		'(',
-		')',
-		'-',
-		'_',
-		'+',
-		'=',
-		'{',
-		'}',
-		'[',
-		']',
-		'|',
-		':',
-		';',
-		'"',
-		"'",
-		'<',
-		'>',
-		',',
-		'.',
-		'?',
-		'/',
-		'\\',
-		'~',
-		'`',
-	];
+
+	const passwordRef = useRef(null);
+	const copyToClipboard = e => {
+		e.preventDefault();
+		passwordRef.current.select();
+		document.execCommand('copy');
+		// This is just personal preference.
+		// I prefer to not show the whole text area selected.
+		e.target.focus();
+	};
+
+	const letterString = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	const numberString = '0123456789';
+	const symbolString = '!@#$%^&*()-_+={}[]|:;"\'<>.?/~`';
+
 	const generatePassword = e => {
 		e.preventDefault();
 
@@ -106,25 +33,31 @@ const App = () => {
 			return;
 		}
 
-		const selectionArray = [];
-		let tempPassword = [];
-		if (parameters.letters) selectionArray.push(lettersArray);
-		if (parameters.numbers) selectionArray.push(numbersArray);
-		if (parameters.symbols) selectionArray.push(symbolsArray);
+		let selectionString = '';
+		let tempPassword = '';
+		if (parameters.letters) selectionString += letterString;
+		if (parameters.numbers) selectionString += numberString;
+		if (parameters.symbols) selectionString += symbolString;
 
-		for (let i = 0; i < selectionArray.length; i++) {
-			let random = Math.floor(Math.random() * selectionArray.length);
-			tempPassword.push(selectionArray[random]);
+		for (let i = 0; i < parameters.characters; i++) {
+			let random = Math.floor(Math.random() * selectionString.length);
+			tempPassword += selectionString[random];
 		}
 
-		setGeneratedPassword(tempPassword.join());
+		setGeneratedPassword(tempPassword);
+		generatedPassword.select();
 	};
 
 	return (
 		<div className='container'>
 			<div className='form-container'>
 				<form>
-					<h1>{generatedPassword}</h1>
+					<div>
+						<input type='text' value={generatedPassword} ref={passwordRef} />
+						<button onClick={copyToClipboard}>
+							Copy <AiOutlineCopy />
+						</button>
+					</div>
 					<div>
 						<select
 							name='characters'
@@ -155,12 +88,11 @@ const App = () => {
 					</div>
 					<div>
 						<input
-							checked
 							type='checkbox'
 							name='letter'
 							id='letter'
 							value={parameters.letters}
-							onChange={() =>
+							onClick={() =>
 								setParameters({ ...parameters, letters: !parameters.letters })
 							}
 						/>
@@ -168,12 +100,11 @@ const App = () => {
 					</div>
 					<div>
 						<input
-							checked
 							type='checkbox'
 							name='number'
 							id='number'
 							value={parameters.numbers}
-							onChange={() =>
+							onClick={() =>
 								setParameters({ ...parameters, numbers: !parameters.numbers })
 							}
 						/>
@@ -181,13 +112,12 @@ const App = () => {
 					</div>
 					<div>
 						<input
-							checked
 							type='checkbox'
 							name='symbol'
 							id='symbol'
 							numbers
 							value={parameters.numbers}
-							onChange={() =>
+							onClick={() =>
 								setParameters({ ...parameters, symbols: !parameters.symbols })
 							}
 						/>
